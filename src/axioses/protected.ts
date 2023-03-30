@@ -19,17 +19,16 @@ axiosProtected.interceptors.request.use(
         const accessToken = await getAccessToken()
 
         if (accessToken) {
-            // @ts-ignore
             config.headers = {
                 ...config.headers,
                 Authorization: `Bearer ${accessToken}`,
-            };
+            }
         }
 
-        return config;
+        return config
     },
     (error) => Promise.reject(error)
-);
+)
 
 axiosProtected.interceptors.response.use(
     (response) => response,
