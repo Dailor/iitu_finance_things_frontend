@@ -50,6 +50,10 @@ export const AuthProvider = ({children}: Props) => {
         router.push('/')
     }
 
+    const redirectToLogin = () => {
+        router.push('/login')
+    }
+
     const loadUser = () => {
         const accessToken = getAccessTokenFromLocalStorage()
 
@@ -62,12 +66,14 @@ export const AuthProvider = ({children}: Props) => {
                 })
                 .catch(() => {
                     toggleIsAuth(false)
+                    redirectToLogin()
                 })
                 .finally(() => {
                     toggleIsAuthFetching(false)
                 })
         } else {
             toggleIsAuthFetching(false)
+            redirectToLogin()
         }
     }
 
