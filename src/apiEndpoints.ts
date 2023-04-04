@@ -12,15 +12,25 @@ export const OPENID_AUTH_URL = getUrlByPathAndParams(
     }
 )
 
-export class AuthEndpointAPI {
-    static base = '/auth'
+export class BaseEndpointAPI {
+    static preBase = '/api'
+    static base
 
-    static refresh = this.base + '/refresh'
-    static logout = this.base + '/logout'
-
-    static me = this.base + '/me'
+    protected static getEndpoint(path){
+        return this.preBase + this.base + path
+    }
 }
 
-export class AdminEndpointsAPI {
-    static base = '/admin'
+export class AuthEndpointAPI extends BaseEndpointAPI{
+    static base = '/v1/auth'
+
+    static login = this.getEndpoint('/login')
+    static refresh = this.getEndpoint('/refresh')
+    static logout = this.getEndpoint('/logout')
+
+    static me = this.getEndpoint('/me')
+}
+
+export class AdminEndpointsAPI extends BaseEndpointAPI{
+    static base = this.getEndpoint('/admin')
 }

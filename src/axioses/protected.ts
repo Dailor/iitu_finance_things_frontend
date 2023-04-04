@@ -1,5 +1,5 @@
 import axios, {AxiosError, CreateAxiosDefaults} from "axios"
-import {BACKEND_API_URL} from "@/constants"
+import {BACKEND_URL} from "@/constants"
 import {getAccessToken} from "@/axioses/refresh.api"
 import {AuthEndpointAPI} from "@/apiEndpoints"
 import {removeJwtTokens} from "@/utilities/jwt"
@@ -11,7 +11,7 @@ const forceLogout = () => {
 
 export const axiosProtected = axios.create(
     {
-        baseURL: BACKEND_API_URL,
+        baseURL: BACKEND_URL,
     } as CreateAxiosDefaults
 )
 
@@ -33,9 +33,10 @@ axiosProtected.interceptors.request.use(
 
 axiosProtected.interceptors.response.use(
     (response) => response,
-    (error: AxiosError) => {
-        const isLogIn = !!getAccessToken()
-        debugger
+    async (error: AxiosError) => {
+        const accessToken = await getAccessToken()
+        const isLogIn = !!(accessToken)
+
         if ((error.response?.status === 401) && isLogIn && error.request.url !== AuthEndpointAPI.logout) {
             forceLogout()
         }

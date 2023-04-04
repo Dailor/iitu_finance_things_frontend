@@ -11,6 +11,9 @@ import type {AppProps} from 'next/app'
 import {AuthProvider} from "@/providers/AuthProvider"
 import {CssBaseline, ThemeProvider} from "@mui/material"
 import {theme} from "@/theme"
+import axios from "axios"
+
+axios.defaults.baseURL = 'http://localhost:8000'
 
 export default function App({Component, pageProps}: AppProps) {
     return (
