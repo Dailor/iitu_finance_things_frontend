@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {AppProps} from "next/app"
 import {useRouter} from "next/router"
 import {useAuth} from "@/providers/AuthProvider"
-import {Box, CircularProgress} from "@mui/material"
+import {Box, CircularProgress, Toolbar} from "@mui/material"
 import Sidebar from "@/components/Sidebar"
 import Header from "@/components/Header";
 
@@ -59,9 +59,10 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
             <Header/>
             <Sidebar/>
             <Box
-                sx={{flexGrow: 1}}
+                component="main"
+                sx={{flexGrow: 1, px: 3,}}
             >
-                <h1>Hello</h1>
+                <Toolbar />
                 {component}
             </Box>
         </Box>
