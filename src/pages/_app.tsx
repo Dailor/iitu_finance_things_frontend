@@ -12,16 +12,23 @@ import {AuthProvider} from "@/providers/AuthProvider"
 import {CssBaseline, ThemeProvider} from "@mui/material"
 import {theme} from "@/theme"
 import axios from "axios"
+import DefaultLayout from "@/layouts/DefaultLayout"
+import Head from 'next/head'
 
 axios.defaults.baseURL = 'http://localhost:8000'
 
 export default function App({Component, pageProps}: AppProps) {
     return (
-        <AuthProvider>
-            <ThemeProvider theme={theme}>
-                <CssBaseline/>
-                <Component {...pageProps} />
-            </ThemeProvider>
-        </AuthProvider>
+        <>
+            <Head>
+                <title>IITU |</title>
+            </Head>
+            <AuthProvider>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline/>
+                    <DefaultLayout {...{Component, pageProps}}/>
+                </ThemeProvider>
+            </AuthProvider>
+        </>
     )
 }

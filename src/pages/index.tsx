@@ -1,6 +1,4 @@
 import Head from 'next/head'
-import {useEffect} from "react"
-import {useAuth} from "@/providers/AuthProvider"
 
 export default function Home() {
     return (

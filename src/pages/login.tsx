@@ -62,9 +62,7 @@ export default function Login() {
                                     size="large" color='primary' variant='outlined'
                                     startIcon={<FaMicrosoft/>}
                                     onClick={redirectMicrosoftOAuth}>
-                                <Typography color='rgb(30, 33, 42)'>
                                     Войти с помощью Microsoft
-                                </Typography>
                             </Button>
                         </Box>
                     </Box>

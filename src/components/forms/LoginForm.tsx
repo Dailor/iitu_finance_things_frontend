@@ -81,7 +81,7 @@ export const LoginForm = () => {
                     error={!!formik.touched.password && Boolean(formik.errors.password)}
                     helperText={formik.touched.password && formik.errors.password || ' '}
                 />
-                <Button variant='contained' type="submit" disabled={isFetching} fullWidth>Войти</Button>
+                <Button variant='contained' color='primary' type="submit" disabled={isFetching} fullWidth>Войти</Button>
             </form>
         </Box>
     )
