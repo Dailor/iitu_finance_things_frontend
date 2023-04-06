@@ -1,29 +1,25 @@
-import React, {createContext, useCallback, useContext, useEffect, useState} from 'react'
+import React, {createContext, useCallback, useContext, useEffect, useReducer, useState} from 'react'
 import {UserRolesEnum} from "@/constants"
 import {loadUserMeRequestApi} from "@/providers/AuthProvider.api"
 import {getAccessTokenFromLocalStorage, ISetAuth, removeJwtTokens, setJwtTokens} from "@/utilities/jwt"
 import {useRouter} from "next/router"
+
+interface IAuthState {
+    user: LocalUser | null
+    isAuthFetching: boolean
+    isAuth: boolean
+}
 
 export interface LocalUser {
     fullName: string,
     role: number
 }
 
-interface AuthContextType {
-    user: LocalUser | null,
-    isAuthFetching: boolean,
-    isAuth: boolean,
+interface AuthContextType extends IAuthState {
     isAdmin: boolean,
     setAuth: ISetAuth,
     logout: { (): void }
 }
-
-export const AuthContext = createContext<AuthContextType | null>(null)
-
-export function useAuth() {
-    return useContext(AuthContext) as AuthContextType
-}
-
 
 interface Props {
     children: React.ReactNode
@@ -93,7 +89,12 @@ export const AuthProvider = ({children}: Props) => {
                 isDirector,
                 isAuthFetching,
                 setAuth,
-                logout
-            }}>{children}</AuthContext.Provider>
+                logout}}>{children}</AuthContext.Provider>
     )
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null)
+
+export function useAuth() {
+    return useContext(AuthContext) as AuthContextType
 }

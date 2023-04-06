@@ -7,6 +7,7 @@ import * as yup from 'yup'
 import axios from "axios"
 import {AuthEndpointAPI} from "@/apiEndpoints"
 import {useAuth} from "@/providers/AuthProvider"
+import {FetchingButton} from "@/components/FetchingButton";
 
 interface ILoginRequest {
     email: string
@@ -81,7 +82,7 @@ export const LoginForm = () => {
                     error={!!formik.touched.password && Boolean(formik.errors.password)}
                     helperText={formik.touched.password && formik.errors.password || ' '}
                 />
-                <Button variant='contained' color='primary' type="submit" disabled={isFetching} fullWidth>Войти</Button>
+                <FetchingButton variant='contained' color='primary' type="submit" isFetching={isFetching} fullWidth>Войти</FetchingButton>
             </form>
         </Box>
     )

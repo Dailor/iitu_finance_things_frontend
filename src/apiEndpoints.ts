@@ -31,6 +31,16 @@ export class AuthEndpointAPI extends BaseEndpointAPI{
     static me = this.getEndpoint('/me')
 }
 
-export class AdminEndpointsAPI extends BaseEndpointAPI{
-    static base = this.getEndpoint('/admin')
+class CRUDEndpointsAPI extends BaseEndpointAPI {
+    static get list (){
+        return this.getEndpoint('/')
+    }
+}
+
+export class UsersEndpointsAPI extends CRUDEndpointsAPI{
+    static base = '/v1/users'
+}
+
+export class DepartmentsEndpointsAPI extends CRUDEndpointsAPI{
+    static base = '/v1/departments'
 }

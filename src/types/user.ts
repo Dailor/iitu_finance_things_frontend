@@ -1,7 +1,8 @@
 export interface IUser {
     id: number
-    fullMame: string
+    fullName: string
     email: string
     role: string
+    departmentID: number
     department: string
 }

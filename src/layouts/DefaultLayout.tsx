@@ -16,23 +16,21 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
     const [isShowLoader, toggleIsShowLoader] = useState(true)
 
     useEffect(() => {
-        if (router.pathname === '/login' && isAuth) {
-            router.push('/')
-        }
+        if (isAuth && !isAuthFetching) {
+            let isAllowed = true
 
-        let isAllowed = true
+            if (router.pathname.startsWith("/admin") && !isAdmin) {
+                isAllowed = false
+            }
+            else if (router.pathname.startsWith("/director") && !isDirector) {
+                isAllowed = false
+            }
 
-        if (router.pathname.startsWith("/admin") && !isAdmin) {
-            isAllowed = false
+            if (router.pathname.startsWith('/login') || !isAllowed) {
+                router.push('/')
+            }
         }
-        if (router.pathname.startsWith("/director") && !isDirector) {
-            isAllowed = false
-        }
-
-        if (!isAllowed) {
-            router.push('/')
-        }
-    }, [isAuth, isAdmin, isDirector, router])
+    }, [isAuth, isAuthFetching, isAdmin, isDirector, router])
 
     useEffect(() => {
         if (isAuthFetching) {
@@ -62,7 +60,7 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
                 component="main"
                 sx={{flexGrow: 1, px: 3,}}
             >
-                <Toolbar />
+                <Toolbar/>
                 {component}
             </Box>
         </Box>
