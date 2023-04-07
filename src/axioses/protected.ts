@@ -37,7 +37,7 @@ axiosProtected.interceptors.response.use(
         const accessToken = await getAccessToken()
         const isLogIn = !!(accessToken)
 
-        if ((error.response?.status === 401) && isLogIn && error.request.url !== AuthEndpointAPI.logout) {
+        if (error.response?.status === 401 && isLogIn && error.request.url !== AuthEndpointAPI.logout) {
             forceLogout()
         }
 

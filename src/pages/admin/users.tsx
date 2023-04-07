@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import Head from "next/head"
 import {DataGrid, GridColDef, GridRowsProp} from "@mui/x-data-grid"
 import {IUser} from "@/types/user"
@@ -16,6 +16,36 @@ export default function Users() {
 
     const [departmentArray, setDepartmentArray] = useState<IDepartment[]>([])
 
+    const [isFetching, toggleIsFetching] = useState(true)
+
+    const loadAll = useCallback(() => {
+        departmentsAPI.list()
+            .then((r) => {
+                setDepartmentArray(r.data.departments)
+                setDepartments(arrayToKeyValue<IDepartment>(r.data.departments))
+            })
+    }, [])
+
+    useEffect(() => {
+        loadAll()
+    }, [loadAll])
+
+    useEffect(() => {
+        if (!!departments)
+            usersAPI.list()
+                .then((r) => {
+                    setUsers(r.data.users.map(user => {
+                        return {
+                            ...user,
+                            department: departments[user.departmentID].name
+                        }
+                    }))
+                })
+                .finally(() => {
+                    toggleIsFetching(false)
+                })
+    }, [departments])
+
     const columns: GridColDef[IUser] = useMemo(
         () => ([
             {field: 'id', headerName: 'ID', width: 30},
@@ -32,32 +62,11 @@ export default function Users() {
                 field: 'actions',
                 headerName: 'Действия',
                 flex: 1,
-                renderCell: ({row}) => <UserEditModal user={row} departments={departmentArray}/>
+                renderCell: ({row}) => <UserEditModal user={row} departments={departmentArray} callback={loadAll}/>
             }
         ]),
-        [departments]
+        [departmentArray, loadAll]
     )
-
-    useEffect(() => {
-        departmentsAPI.list()
-            .then((r) => {
-                setDepartmentArray(r.data.departments)
-                setDepartments(arrayToKeyValue<IDepartment>(r.data.departments))
-            })
-    }, [])
-
-    useEffect(() => {
-        if (!!departments)
-            usersAPI.list()
-                .then((r) => {
-                    setUsers(r.data.users.map(user => {
-                        return {
-                            ...user,
-                            department: departments[user.departmentID]
-                        }
-                    }))
-                })
-    }, [departments])
 
     return (
         <>
@@ -67,7 +76,7 @@ export default function Users() {
             <main>
                 <h1>Пользователи</h1>
                 <div style={{height: 300, width: '100%'}}>
-                    <DataGrid rows={users} columns={columns}/>
+                    <DataGrid rows={users} columns={columns} loading={isFetching}/>
                 </div>
             </main>
         </>

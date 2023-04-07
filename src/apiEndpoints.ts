@@ -39,6 +39,10 @@ class CRUDEndpointsAPI extends BaseEndpointAPI {
 
 export class UsersEndpointsAPI extends CRUDEndpointsAPI{
     static base = '/v1/users'
+
+    static edit = (id) => {
+        return this.getEndpoint(`/${id}`)
+    }
 }
 
 export class DepartmentsEndpointsAPI extends CRUDEndpointsAPI{

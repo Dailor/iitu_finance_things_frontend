@@ -4,7 +4,8 @@ import StyledModal from "@/components/modals/StyledModal"
 import {useFormik} from "formik"
 import * as yup from "yup"
 import departmentsAPI from "@/requests/departments"
-import {FetchingButton} from "@/components/FetchingButton";
+import {FetchingButton} from "@/components/FetchingButton"
+import {PropsCallback} from "@/types/componentsWithCallback"
 
 const validationSchema = yup.object({
     name: yup
@@ -12,7 +13,10 @@ const validationSchema = yup.object({
         .required('Введите название департамента'),
 })
 
-const DepartmentAddModal = () => {
+interface Props extends PropsCallback{
+}
+
+const DepartmentAddModal = ({callback}: Props) => {
     const [open, setOpen] = useState(false)
     const [isFetching, toggleIsFetching] = useState(false)
 
@@ -25,13 +29,19 @@ const DepartmentAddModal = () => {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
+            toggleIsFetching(true)
+
             departmentsAPI.add(values)
                 .then((r) => {
+                    if (callback)
+                        callback()
+
+                    handleClose()
                 })
                 .catch(e => {
                     if (e.response.status == 422) {
                         formik.setErrors({
-                            name: "",
+                            name: "Ошибка при добавлении",
                         })
                     }
                 })
@@ -53,11 +63,9 @@ const DepartmentAddModal = () => {
         <>
             <Button variant='contained' color='primary' onClick={handleOpen}>Добавить</Button>
             <StyledModal open={open} onClose={handleClose} heading='Добавить'
-                         bottomChildren={successButton}
-            >
+                         bottomChildren={successButton}>
                 <form onSubmit={formik.handleSubmit}>
                     <TextField
-                        fullWidth
                         id='name'
                         label='Название'
                         sx={{marginBottom: 1}}
@@ -65,6 +73,7 @@ const DepartmentAddModal = () => {
                         onChange={formik.handleChange}
                         error={!!formik.touched.name && Boolean(formik.errors.name)}
                         helperText={formik.touched.name && formik.errors.name || ' '}
+                        fullWidth
                     />
                 </form>
             </StyledModal>

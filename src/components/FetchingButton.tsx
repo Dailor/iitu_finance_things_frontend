@@ -21,7 +21,7 @@ export const FetchingButton = React.forwardRef<HTMLElement, CustomProps>(
                 }}
                 disabled={isFetching}
             >
-                {!!isFetching && (
+                {isFetching && (
                     <CircularProgress
                         color="inherit"
                         style={{

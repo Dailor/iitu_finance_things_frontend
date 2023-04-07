@@ -9,9 +9,11 @@ import {AuthEndpointAPI} from "@/apiEndpoints"
 import {IRefreshResponse} from "@/types/auth"
 
 
-let refreshTokenRequest: AxiosPromise<IRefreshResponse> | null = null
+let refreshTokenRequest: axios.AxiosResponse<IRefreshResponse> | null = null
 
-const refreshTokens = (refreshToken: string) => {
+type IRefreshTokensFunc = (refreshToken: string) => Promise<axios.AxiosResponse<IRefreshResponse>>
+
+const refreshTokens: IRefreshTokensFunc = (refreshToken: string) => {
     return axios.post(AuthEndpointAPI.refresh, {refreshToken})
 }
 
@@ -25,12 +27,13 @@ export const getAccessToken =
                     const refreshToken = getRefreshTokenFromLocalStorage()
 
                     if (refreshToken) {
-                        refreshTokenRequest = refreshTokens(refreshToken)
+                        refreshTokenRequest = await refreshTokens(refreshToken)
                     }
                 }
 
                 const res = await refreshTokenRequest
                 refreshTokenRequest = null
+
 
                 if (res) {
                     const {accessToken, refreshToken} = res.data
