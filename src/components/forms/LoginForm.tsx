@@ -46,9 +46,13 @@ export const LoginForm = () => {
                     setAuth(accessToken, refreshToken)
                 })
                 .catch(e => {
-                    if (e.response.status == 422) {
+                    if (e.response?.status == 422) {
                         formik.setErrors({
                             password: e.response.data.detail
+                        })
+                    } else {
+                        formik.setErrors({
+                            password: 'Ошибка на сервере, попробуйте позже'
                         })
                     }
                 })
@@ -82,7 +86,8 @@ export const LoginForm = () => {
                     error={!!formik.touched.password && Boolean(formik.errors.password)}
                     helperText={formik.touched.password && formik.errors.password || ' '}
                 />
-                <FetchingButton variant='contained' color='primary' type="submit" isFetching={isFetching} fullWidth>Войти</FetchingButton>
+                <FetchingButton variant='contained' color='primary' type="submit" isFetching={isFetching}
+                                fullWidth>Войти</FetchingButton>
             </form>
         </Box>
     )

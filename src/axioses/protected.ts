@@ -34,11 +34,14 @@ axiosProtected.interceptors.request.use(
 axiosProtected.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-        const accessToken = await getAccessToken()
-        const isLogIn = !!(accessToken)
 
-        if (error.response?.status === 401 && isLogIn && error.request.url !== AuthEndpointAPI.logout) {
-            forceLogout()
+
+        if (error.response?.status === 401) {
+            const accessToken = await getAccessToken()
+            const isLogIn = !!(accessToken)
+
+            if (isLogIn && error.request.url !== AuthEndpointAPI.logout)
+                forceLogout()
         }
 
         throw error

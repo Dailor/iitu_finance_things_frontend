@@ -42,19 +42,19 @@ export const AuthProvider = ({children}: Props) => {
         router.push('/')
     }
 
-    const logout = () => {
+    const logout = useCallback(() => {
         removeJwtTokens()
         setUser(null)
         toggleIsAuth(false)
-        router.push('/')
-    }
+        redirectToLogin()
+    }, [])
+
+    const redirectToLogin = useCallback(() => {
+        router.push('/login')
+    }, [])
 
     const loadUser = useCallback(() => {
         const accessToken = getAccessTokenFromLocalStorage()
-
-        const redirectToLogin = () => {
-            router.push('/login')
-        }
 
         if (accessToken) {
             toggleIsAuth(true)
@@ -63,9 +63,10 @@ export const AuthProvider = ({children}: Props) => {
                 .then(r => {
                     setUser(r.data)
                 })
-                .catch(() => {
+                .catch((r) => {
                     toggleIsAuth(false)
-                    redirectToLogin()
+                    if (!router.pathname.startsWith('/login'))
+                        redirectToLogin()
                 })
                 .finally(() => {
                     toggleIsAuthFetching(false)
@@ -74,7 +75,7 @@ export const AuthProvider = ({children}: Props) => {
             toggleIsAuthFetching(false)
             redirectToLogin()
         }
-    }, [router])
+    }, [])
 
     useEffect(() => {
         loadUser()
@@ -89,7 +90,8 @@ export const AuthProvider = ({children}: Props) => {
                 isDirector,
                 isAuthFetching,
                 setAuth,
-                logout}}>{children}</AuthContext.Provider>
+                logout
+            }}>{children}</AuthContext.Provider>
     )
 }
 

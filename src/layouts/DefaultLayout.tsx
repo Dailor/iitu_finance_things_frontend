@@ -26,6 +26,8 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
                 isAllowed = false
             }
 
+            debugger
+
             if (router.pathname.startsWith('/login') || !isAllowed) {
                 router.push('/')
             }
@@ -38,7 +40,7 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
                 toggleIsShowLoader(false)
             }, 2000)
         }
-    }, [isShowLoader])
+    }, [isAuthFetching, isShowLoader])
 
     if (isShowLoader) {
         return (

@@ -37,7 +37,7 @@ export default function Users() {
                     setUsers(r.data.users.map(user => {
                         return {
                             ...user,
-                            department: departments[user.departmentID].name
+                            department: departments[user.departmentID]?.name || '-'
                         }
                     }))
                 })
@@ -49,13 +49,13 @@ export default function Users() {
     const columns: GridColDef[IUser] = useMemo(
         () => ([
             {field: 'id', headerName: 'ID', width: 30},
-            {field: 'fullname', headerName: 'ФИО', width: 300},
+            {field: 'fullName', headerName: 'ФИО', width: 400},
             {field: 'email', headerName: 'Почта', width: 150},
             {field: 'department', headerName: 'Департамент', width: 300},
             {
                 field: 'role',
                 headerName: 'Роль',
-                width: 150,
+                width: 250,
                 renderCell: ({row}) => (roleToRoleName[row.role as UserRolesEnum] || '-')
             },
             {

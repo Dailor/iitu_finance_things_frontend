@@ -11,6 +11,8 @@ import {
     Toolbar
 } from "@mui/material"
 
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'
+
 import {useAuth} from "@/providers/AuthProvider"
 
 import Image from "next/image"
@@ -65,6 +67,21 @@ const SidebarLinks = ({prefix, heading, links}: SidebarLinksProps) => {
     )
 }
 
+const LogoutButton = () => {
+    const {logout} = useAuth()
+
+    return (
+        <ListItem disablePadding>
+            <ListItemButton onClick={logout}>
+                <ListItemIcon>
+                    <ExitToAppIcon/>
+                </ListItemIcon>
+                <ListItemText primary='Выйти'/>
+            </ListItemButton>
+        </ListItem>
+    )
+}
+
 const Sidebar = () => {
     const {isAdmin, isDirector} = useAuth()
 
@@ -95,6 +112,7 @@ const Sidebar = () => {
             {isDirector && (
                 <SidebarLinks {...directorLinks}/>
             )}
+            <LogoutButton/>
         </Drawer>
     )
 }
