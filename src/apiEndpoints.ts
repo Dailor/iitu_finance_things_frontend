@@ -16,12 +16,12 @@ export class BaseEndpointAPI {
     static preBase = '/api'
     static base
 
-    protected static getEndpoint(path){
+    protected static getEndpoint(path) {
         return this.preBase + this.base + path
     }
 }
 
-export class AuthEndpointAPI extends BaseEndpointAPI{
+export class AuthEndpointAPI extends BaseEndpointAPI {
     static base = '/v1/auth'
 
     static login = this.getEndpoint('/login')
@@ -32,12 +32,12 @@ export class AuthEndpointAPI extends BaseEndpointAPI{
 }
 
 class CRUDEndpointsAPI extends BaseEndpointAPI {
-    static get list (){
+    static get list() {
         return this.getEndpoint('/')
     }
 }
 
-export class UsersEndpointsAPI extends CRUDEndpointsAPI{
+export class UsersEndpointsAPI extends CRUDEndpointsAPI {
     static base = '/v1/users'
 
     static edit = (id) => {
@@ -45,6 +45,10 @@ export class UsersEndpointsAPI extends CRUDEndpointsAPI{
     }
 }
 
-export class DepartmentsEndpointsAPI extends CRUDEndpointsAPI{
+export class DepartmentsEndpointsAPI extends CRUDEndpointsAPI {
     static base = '/v1/departments'
+}
+
+export class KitsEndpointsAPI extends CRUDEndpointsAPI {
+    static base = '/v1/kits'
 }

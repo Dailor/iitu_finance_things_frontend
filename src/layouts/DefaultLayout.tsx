@@ -26,8 +26,6 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
                 isAllowed = false
             }
 
-            debugger
-
             if (router.pathname.startsWith('/login') || !isAllowed) {
                 router.push('/')
             }

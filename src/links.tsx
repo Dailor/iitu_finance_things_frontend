@@ -1,5 +1,6 @@
 import PeopleIcon from '@mui/icons-material/People'
 import BusinessIcon from '@mui/icons-material/Business'
+import TurnedInIcon from '@mui/icons-material/TurnedIn'
 
 interface IRoleLinks {
     heading: string
@@ -27,5 +28,11 @@ export const adminLinks: IRoleLinks = {
 export const directorLinks: IRoleLinks = {
     heading: 'Директор Департамента',
     prefix: '/director',
-    links: []
+    links: [
+        {
+            icon: <TurnedInIcon/>,
+            title: 'Наборы',
+            to: '/kits'
+        }
+    ]
 }

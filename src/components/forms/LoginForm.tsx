@@ -7,7 +7,7 @@ import * as yup from 'yup'
 import axios from "axios"
 import {AuthEndpointAPI} from "@/apiEndpoints"
 import {useAuth} from "@/providers/AuthProvider"
-import {FetchingButton} from "@/components/FetchingButton";
+import {FetchingButton} from "@/components/FetchingButton"
 
 interface ILoginRequest {
     email: string
