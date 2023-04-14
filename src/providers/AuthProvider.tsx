@@ -18,6 +18,7 @@ export interface LocalUser {
 interface AuthContextType extends IAuthState {
     isAdmin: boolean,
     setAuth: ISetAuth,
+    redirectToLogin: {(): Promise<any>}
     logout: { (): void }
 }
 
@@ -29,11 +30,33 @@ export const AuthProvider = ({children}: Props) => {
     const router = useRouter()
 
     const [isAuthFetching, toggleIsAuthFetching] = useState<boolean>(true)
-    const [isAuth, toggleIsAuth] = useState<boolean>(false)
     const [user, setUser] = useState<LocalUser | null>(null)
 
     const isAdmin = user?.role === UserRolesEnum.ADMIN
     const isDirector = user?.role === UserRolesEnum.DEPARTMENT_DIRECTOR
+
+    const redirectToLogin = useCallback(() => {
+        return router.push('/login')
+    }, [router])
+
+    const loadUser = useCallback(() => {
+        const accessToken = getAccessTokenFromLocalStorage()
+
+        if (accessToken) {
+            loadUserMeRequestApi()
+                .then(r => {
+                    setUser(r.data)
+                })
+                .catch(() => {
+
+                })
+                .finally(() => {
+                    toggleIsAuthFetching(false)
+                })
+        } else {
+            toggleIsAuthFetching(false)
+        }
+    }, [])
 
     const setAuth: ISetAuth = (accessToken, refreshToken) => {
         setJwtTokens(accessToken, refreshToken)
@@ -45,36 +68,6 @@ export const AuthProvider = ({children}: Props) => {
     const logout = useCallback(() => {
         removeJwtTokens()
         setUser(null)
-        toggleIsAuth(false)
-        redirectToLogin()
-    }, [])
-
-    const redirectToLogin = useCallback(() => {
-        router.push('/login')
-    }, [])
-
-    const loadUser = useCallback(() => {
-        const accessToken = getAccessTokenFromLocalStorage()
-
-        if (accessToken) {
-            toggleIsAuth(true)
-
-            loadUserMeRequestApi()
-                .then(r => {
-                    setUser(r.data)
-                })
-                .catch((r) => {
-                    toggleIsAuth(false)
-                    if (!router.pathname.startsWith('/login'))
-                        redirectToLogin()
-                })
-                .finally(() => {
-                    toggleIsAuthFetching(false)
-                })
-        } else {
-            toggleIsAuthFetching(false)
-            redirectToLogin()
-        }
     }, [])
 
     useEffect(() => {
@@ -85,11 +78,12 @@ export const AuthProvider = ({children}: Props) => {
         <AuthContext.Provider
             value={{
                 user,
-                isAuth,
+                isAuth: !!user,
                 isAdmin,
                 isDirector,
                 isAuthFetching,
                 setAuth,
+                redirectToLogin,
                 logout
             }}>{children}</AuthContext.Provider>
     )

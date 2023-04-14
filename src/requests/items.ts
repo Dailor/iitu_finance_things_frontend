@@ -1,19 +1,19 @@
 import {axiosProtected} from "@/axioses/protected"
-import {DepartmentsEndpointsAPI} from "@/apiEndpoints"
-import {IDepartment} from "@/types/department"
+import {ItemEndpointsAPI} from "@/apiEndpoints"
+import {IItem} from "@/types/item"
 
 interface IItemsResponse {
-    items: IDepartment[]
+    items: IItem[]
 }
 
-interface IDepartmentAddRequest extends Omit<IDepartment, 'id'>{}
+interface IItemAddRequest extends Omit<IItem, 'id'>{}
 
-interface IDepartmentEditRequest extends IDepartment {}
+interface IItemEditRequest extends IItem {}
 
 
 const itemsAPI = {
-    list: () => axiosProtected.get<IItemsResponse>(DepartmentsEndpointsAPI.list),
-    add: (data: IDepartmentEditRequest) => axiosProtected.put<IItemsResponse>(DepartmentsEndpointsAPI.list, data)
+    list: (params) => axiosProtected.get<IItemsResponse>(ItemEndpointsAPI.list, {params}),
+    add: (data: IItemAddRequest) => axiosProtected.put<IItemsResponse>(ItemEndpointsAPI.list, data)
 }
 
 export default itemsAPI

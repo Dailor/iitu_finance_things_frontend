@@ -40,6 +40,8 @@ export const LoginForm = () => {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
+            toggleIsFetching(true)
+
             loginRequest(values)
                 .then((r) => {
                     const {accessToken, refreshToken} = r.data

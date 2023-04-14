@@ -78,10 +78,8 @@ const UserEditModal = ({user, departments, callback}: Props) => {
         <FetchingButton variant='contained' color='primary' isFetching={isFetching}
                         onClick={() => {
                             formik.handleSubmit()
-                        }}>Создать</FetchingButton>
+                        }}>Сохранить</FetchingButton>
     ), [formik, isFetching])
-
-    console.log(formik)
 
     return (
         <>

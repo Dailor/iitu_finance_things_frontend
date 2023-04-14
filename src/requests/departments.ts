@@ -13,7 +13,7 @@ interface IDepartmentEditRequest extends IDepartment {}
 
 const departmentsAPI = {
     list: () => axiosProtected.get<IDepartmentsResponse>(DepartmentsEndpointsAPI.list),
-    add: (data: IDepartmentEditRequest) => axiosProtected.put<IDepartmentsResponse>(DepartmentsEndpointsAPI.list, data)
+    add: (data: IDepartmentAddRequest) => axiosProtected.put<IDepartmentsResponse>(DepartmentsEndpointsAPI.list, data)
 }
 
 export default departmentsAPI

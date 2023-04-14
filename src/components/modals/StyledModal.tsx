@@ -1,6 +1,8 @@
 import React from 'react'
 import {Box, Button, Modal, SxProps, Typography} from "@mui/material"
 
+const borderColor = '#E3E5E7FF'
+
 const style: SxProps = {
     display: 'flex',
     flexDirection: 'column',
@@ -23,7 +25,8 @@ const modalManageStyle: SxProps | any = {
 
 const modalHeadStyle: SxProps = {
     ...modalManageStyle,
-    borderBottom: 1
+    borderBottom: 1,
+    borderColor
 }
 
 const modalBodyStyle: SxProps = {
@@ -36,7 +39,8 @@ const modalBodyStyle: SxProps = {
 const modalBottomStyle: SxProps = {
     ...modalManageStyle,
     display: 'flex', justifyContent: 'end', gap: 1.5,
-    borderTop: 1
+    borderTop: 1,
+    borderColor
 }
 
 interface ModalHeadProps {
@@ -80,9 +84,9 @@ const ModalBottom = ({handleClose, children}: ModalBottomProps) => {
 interface Props {
     heading: string,
     open: boolean
-    handleClose: () => {},
     children: React.ReactNode,
-    bottomChildren?: React.ReactNode
+    bottomChildren?: React.ReactNode,
+    sx: SxProps
 }
 
 const StyledModal = (props: Props) => {
@@ -90,7 +94,7 @@ const StyledModal = (props: Props) => {
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={style}>
+            <Box sx={{...style, ...props.sx}}>
                 <ModalHead heading={props.heading}/>
                 <ModalBody>
                     {props.children}

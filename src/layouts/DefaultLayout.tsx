@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {AppProps} from "next/app"
 import {useRouter} from "next/router"
 import {useAuth} from "@/providers/AuthProvider"
@@ -11,34 +11,37 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
     const router = useRouter()
     const component = <Component {...pageProps} />
 
-    const {isAuthFetching, isAuth, isAdmin, isDirector} = useAuth()
+    const {isAuthFetching, isAuth, isAdmin, isDirector, redirectToLogin} = useAuth()
 
     const [isShowLoader, toggleIsShowLoader] = useState(true)
 
-    useEffect(() => {
-        if (isAuth && !isAuthFetching) {
-            let isAllowed = true
-
-            if (router.pathname.startsWith("/admin") && !isAdmin) {
-                isAllowed = false
-            }
-            else if (router.pathname.startsWith("/director") && !isDirector) {
-                isAllowed = false
-            }
-
-            if (router.pathname.startsWith('/login') || !isAllowed) {
-                router.push('/')
-            }
-        }
-    }, [isAuth, isAuthFetching, isAdmin, isDirector, router])
+    const toggleOffLoader = () => {
+        setTimeout(()=> {
+            toggleIsShowLoader(false)
+        }, 2000)
+    }
 
     useEffect(() => {
-        if (isAuthFetching) {
-            setTimeout(() => {
-                toggleIsShowLoader(false)
-            }, 2000)
+        if (!isAuthFetching) {
+            if (isAuth) {
+                let isAllowed = true
+
+                if (router.pathname.startsWith("/admin") && !isAdmin) {
+                    isAllowed = false
+                } else if (router.pathname.startsWith("/director") && !isDirector) {
+                    isAllowed = false
+                }
+
+                if (router.pathname.startsWith('/login') || !isAllowed) {
+                    void router.push('/')
+                }
+            } else {
+                if (!router.pathname.startsWith('/login'))
+                    void redirectToLogin()
+            }
+            toggleOffLoader()
         }
-    }, [isAuthFetching, isShowLoader])
+    }, [isAuth, isAuthFetching, isAdmin, isDirector, router, redirectToLogin])
 
     if (isShowLoader) {
         return (

@@ -35,18 +35,22 @@ class CRUDEndpointsAPI extends BaseEndpointAPI {
     static get list() {
         return this.getEndpoint('/')
     }
-}
-
-export class UsersEndpointsAPI extends CRUDEndpointsAPI {
-    static base = '/v1/users'
 
     static edit = (id) => {
         return this.getEndpoint(`/${id}`)
     }
 }
 
+export class UsersEndpointsAPI extends CRUDEndpointsAPI {
+    static base = '/v1/users'
+}
+
 export class DepartmentsEndpointsAPI extends CRUDEndpointsAPI {
     static base = '/v1/departments'
+}
+
+export class ItemEndpointsAPI extends CRUDEndpointsAPI {
+    static base = '/v1/items'
 }
 
 export class KitsEndpointsAPI extends CRUDEndpointsAPI {

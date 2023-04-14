@@ -1,3 +1,3 @@
 export interface PropsCallback {
-    callback?: () => {}
+    callback?: () => void
 }
