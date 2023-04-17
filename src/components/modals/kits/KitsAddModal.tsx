@@ -11,6 +11,8 @@ import itemsAPI from "@/requests/items"
 import {IItem} from "@/types/item"
 
 import DeleteIcon from '@mui/icons-material/Delete'
+import ItemsModalContainer from "@/components/modals/kits/ItemsModalContainer";
+import EntityContainer from "@/components/EntityContainer";
 
 const validationSchema = yup.object({
     name: yup
@@ -31,11 +33,9 @@ const validationSchema = yup.object({
         )
 })
 
-interface IItemsContainer {
-    [key: number]: {
-        item: Omit<IItem, 'description'>
-        count: number
-    }
+interface IItemCounter {
+    id: number
+    count: number
 }
 
 interface Props extends PropsCallback {
@@ -43,14 +43,14 @@ interface Props extends PropsCallback {
 
 
 const KitAddModal = ({callback}: Props) => {
-    const [open, setOpen] = useState(false)
-    const [isFetching, toggleIsFetching] = useState(false)
+    const [open, setOpen] = useState<boolean>(false)
+    const [isFetching, toggleIsFetching] = useState<boolean>(false)
 
-    const handleOpen = () => setOpen(true)
-    const handleClose = () => setOpen(false)
+    const handleOpen = () => setOpen<boolean>(true)
+    const handleClose = () => setOpen<boolean>(false)
 
-    const [itemsContainer, setItemsContainer]: Record<number, string> = useState([])
-
+    const [itemsIdToNameContainer, setItemsIdToNameContainer] = useState<Record<number, string>>({})
+    const [itemsContainer, setItemsContainer] = useState<IItemCounter[]>([])
 
     const searchByName: AutocompleteFromBackendProps['searchByName'] = (name) => {
         return itemsAPI
@@ -68,11 +68,15 @@ const KitAddModal = ({callback}: Props) => {
             return
         }
 
-        setItemsContainer({...itemsContainer, [v.id]: v.name})
-        formik.values.items.push({
-            id: v.id,
-            count: 0
-        })
+        setItemsIdToNameContainer({...itemsIdToNameContainer, [v.id]: v.name})
+
+        setItemsContainer(
+            [
+                ...itemsContainer, {
+                id: v.id,
+                count: 0
+            }]
+        )
     }
 
     const formik = useFormik({
@@ -105,6 +109,18 @@ const KitAddModal = ({callback}: Props) => {
         },
     })
 
+    const onRemoveItem = (index) => {
+        const {byKey, ...rest} = itemsIdToNameContainer
+
+        setItemsContainer(itemsContainer.filter((item, indexIter) => indexIter != index))
+        setItemsIdToNameContainer(rest)
+    }
+
+    const onCounterChange = (index, e) => {
+        itemsContainer[index].count = e.target.value
+        setItemsContainer([...itemsContainer])
+    }
+
     const successButton = useMemo(() => (
         <FetchingButton variant='contained' color='primary' isFetching={isFetching}
                         onClick={() => {
@@ -116,7 +132,7 @@ const KitAddModal = ({callback}: Props) => {
         <>
             <Button variant='contained' color='primary' onClick={handleOpen}>Добавить</Button>
             <StyledModal sx={{
-                width: 800
+                width: 1000
             }} open={open} onClose={handleClose} heading='Добавить'
                          bottomChildren={successButton}>
                 <form onSubmit={formik.handleSubmit}>
@@ -150,23 +166,12 @@ const KitAddModal = ({callback}: Props) => {
                             <Typography variant='h5' sx={{wordBreak: '', marginBottom: 1}}>Список предметов</Typography>
                             <AutocompleteFromBackend label='Предметы' sx={{width: '100%', marginBottom: 1}}
                                                      onChange={onChangeItemSelect}
-                                                     searchByName={searchByName}/>
-                            <Box sx={{height: '100%'}}>
-                                {formik.values.items.map((item, index) => (
-                                    <Box sx={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        '&:not(:last-child)': {marginBottom: 1}
-                                    }} key={index}>
-                                        <Box>
-                                            <Typography>{itemsContainer[item.id]}</Typography>
-                                        </Box>
-                                        <Box>
-                                            <Button variant='contained' color='error'><DeleteIcon size={20}/></Button>
-                                        </Box>
-                                    </Box>
-                                ))}
-                            </Box>
+                                                     searchByName={searchByName}
+                                                     excludeFunc={(raw => (!(raw.id in itemsIdToNameContainer)))}/>
+                            <EntityContainer rows={itemsContainer}
+                                             getLabel={(row) => (itemsIdToNameContainer[row.id])}
+                                             onCountChange={onCounterChange}
+                                             onRemove={onRemoveItem}/>
                         </Box>
                     </Box>
                 </form>

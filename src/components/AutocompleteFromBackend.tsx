@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Autocomplete, AutocompleteProps, CircularProgress, SxProps, TextField} from "@mui/material";
 
 
@@ -12,9 +12,10 @@ export interface AutocompleteFromBackendProps {
     sx: SxProps,
     searchByName: (string) => Promise<IRecords[]>
     onChange: (SyntheticBaseEvent, IRecord) => void //TODO:Изменить any
+    excludeFunc: (raw: any, index?: number) => boolean
 }
 
-const AutocompleteFromBackend = (props: AutocompleteFromBackendProps) => {
+const AutocompleteFromBackend = ({excludeFunc, ...props}: AutocompleteFromBackendProps) => {
     const {label, sx, onChange, searchByName, ...otherProps} = props
 
     const [open, setOpen] = useState(false)
@@ -44,6 +45,8 @@ const AutocompleteFromBackend = (props: AutocompleteFromBackendProps) => {
         loadData()
     }, [loadData])
 
+    const filteredOptions = useMemo(() => (!!excludeFunc ? options.filter(excludeFunc) : options), [excludeFunc, options])
+
     return (
         <Autocomplete
             id="autocomplate-backend"
@@ -63,7 +66,7 @@ const AutocompleteFromBackend = (props: AutocompleteFromBackendProps) => {
             }}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
-            options={options}
+            options={filteredOptions}
             loading={isFetching}
             renderInput={(params) => (
                 <TextField
