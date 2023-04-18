@@ -1,18 +1,16 @@
-import React, {createRef, useMemo, useState} from 'react'
-import {Box, Button, TextField, Typography} from "@mui/material"
+import React, {useCallback, useMemo, useState} from 'react'
+import {Box, Button, Grid, TextField, Typography} from "@mui/material"
 import StyledModal from "@/components/modals/StyledModal"
 import {useFormik} from "formik"
 import * as yup from "yup"
 import {FetchingButton} from "@/components/FetchingButton"
 import {PropsCallback} from "@/types/componentsWithCallback"
 import kitsAPI from "@/requests/kit"
-import AutocompleteFromBackend, {AutocompleteFromBackendProps} from "@/components/AutocompleteFromBackend"
 import itemsAPI from "@/requests/items"
-import {IItem} from "@/types/item"
 
-import DeleteIcon from '@mui/icons-material/Delete'
-import ItemsModalContainer from "@/components/modals/kits/ItemsModalContainer";
-import EntityContainer from "@/components/EntityContainer";
+import EntityContainer from "@/components/EntityContainer"
+import AutocompleteFromBackend, {AutocompleteFromBackendProps} from "@/components/AutocompleteFromBackend"
+import rePatterns from "@/utilities/rePatterns"
 
 const validationSchema = yup.object({
     name: yup
@@ -41,7 +39,6 @@ interface IItemCounter {
 interface Props extends PropsCallback {
 }
 
-
 const KitAddModal = ({callback}: Props) => {
     const [open, setOpen] = useState<boolean>(false)
     const [isFetching, toggleIsFetching] = useState<boolean>(false)
@@ -52,7 +49,9 @@ const KitAddModal = ({callback}: Props) => {
     const [itemsIdToNameContainer, setItemsIdToNameContainer] = useState<Record<number, string>>({})
     const [itemsContainer, setItemsContainer] = useState<IItemCounter[]>([])
 
-    const searchByName: AutocompleteFromBackendProps['searchByName'] = (name) => {
+    const entityContainerHeight = 300
+
+    const searchByName = useCallback<AutocompleteFromBackendProps['searchByName']>((name) => {
         return itemsAPI
             .list({name})
             .then(r => {
@@ -61,7 +60,7 @@ const KitAddModal = ({callback}: Props) => {
                     name: item.name
                 }))
             })
-    }
+    }, [])
 
     const onChangeItemSelect = (e, v) => {
         if (!v) {
@@ -89,6 +88,8 @@ const KitAddModal = ({callback}: Props) => {
         onSubmit: (values) => {
             toggleIsFetching(true)
 
+            formik.values.items = itemsContainer
+
             kitsAPI.add(values)
                 .then((r) => {
                     if (callback)
@@ -110,15 +111,19 @@ const KitAddModal = ({callback}: Props) => {
     })
 
     const onRemoveItem = (index) => {
-        const {byKey, ...rest} = itemsIdToNameContainer
+        const {[itemsContainer[index].id]: itemToRemove, ...rest} = itemsIdToNameContainer
 
         setItemsContainer(itemsContainer.filter((item, indexIter) => indexIter != index))
         setItemsIdToNameContainer(rest)
     }
 
     const onCounterChange = (index, e) => {
-        itemsContainer[index].count = e.target.value
-        setItemsContainer([...itemsContainer])
+        const count = e.target.value
+
+        if (rePatterns.onlyNumbers.test(count)) {
+            itemsContainer[index].count = e.target.value
+            setItemsContainer([...itemsContainer])
+        }
     }
 
     const successButton = useMemo(() => (
@@ -132,17 +137,19 @@ const KitAddModal = ({callback}: Props) => {
         <>
             <Button variant='contained' color='primary' onClick={handleOpen}>Добавить</Button>
             <StyledModal sx={{
-                width: 1000
+                width: 1000,
             }} open={open} onClose={handleClose} heading='Добавить'
                          bottomChildren={successButton}>
                 <form onSubmit={formik.handleSubmit}>
-                    <Box sx={{display: 'flex', gap: 1.5}}>
-                        <Box sx={{flexBasis: '50%'}}>
+                    <Grid container spacing={1.5}>
+                        <Grid sx={{display: 'flex', flexDirection: 'column'}} md={6} item>
                             <Typography variant='h5' sx={{marginBottom: 1, wordBreak: ''}}>Основное</Typography>
                             <TextField
                                 id='name'
                                 label='Название'
-                                sx={{marginBottom: 1}}
+                                sx={{
+                                    marginBottom: 1,
+                                }}
                                 value={formik.values.name}
                                 onChange={formik.handleChange}
                                 error={!!formik.touched.name && Boolean(formik.errors.name)}
@@ -152,28 +159,38 @@ const KitAddModal = ({callback}: Props) => {
                             <TextField
                                 id='description'
                                 label='Описание'
-                                sx={{marginBottom: 1}}
+                                sx={{
+                                    marginBottom: 1, flexGrow: 1,
+                                    '& .MuiInputBase-root': {
+                                        height: '100% !important'
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        height: '100% !important',
+                                        overflow: "auto !important"
+                                    }
+                                }}
                                 value={formik.values.description}
                                 onChange={formik.handleChange}
-                                error={!!formik.touched.description && Boolean(formik.errors.description)}
-                                helperText={formik.touched.description && formik.errors.description || ' '}
-                                rows={12}
                                 fullWidth
                                 multiline
                             />
-                        </Box>
-                        <Box sx={{flexBasis: '50%'}}>
+                        </Grid>
+                        <Grid sx={{display: 'flex', flexDirection: 'column'}} md={6} item>
                             <Typography variant='h5' sx={{wordBreak: '', marginBottom: 1}}>Список предметов</Typography>
-                            <AutocompleteFromBackend label='Предметы' sx={{width: '100%', marginBottom: 1}}
-                                                     onChange={onChangeItemSelect}
-                                                     searchByName={searchByName}
-                                                     excludeFunc={(raw => (!(raw.id in itemsIdToNameContainer)))}/>
-                            <EntityContainer rows={itemsContainer}
-                                             getLabel={(row) => (itemsIdToNameContainer[row.id])}
-                                             onCountChange={onCounterChange}
-                                             onRemove={onRemoveItem}/>
-                        </Box>
-                    </Box>
+                            <AutocompleteFromBackend
+                                label='Предметы'
+                                sx={{width: '100%', marginBottom: 1}}
+                                onChange={onChangeItemSelect}
+                                searchByName={searchByName}
+                                excludeFunc={(raw => (!(raw.id in itemsIdToNameContainer)))}/>
+                            <EntityContainer
+                                sx={{height: entityContainerHeight, overflow: 'auto'}}
+                                rows={itemsContainer}
+                                getLabel={(row) => (itemsIdToNameContainer[row.id])}
+                                onCountChange={onCounterChange}
+                                onRemove={onRemoveItem}/>
+                        </Grid>
+                    </Grid>
                 </form>
             </StyledModal>
         </>

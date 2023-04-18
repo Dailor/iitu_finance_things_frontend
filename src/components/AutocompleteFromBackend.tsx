@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Autocomplete, AutocompleteProps, CircularProgress, SxProps, TextField} from "@mui/material";
 
 
@@ -23,6 +23,8 @@ const AutocompleteFromBackend = ({excludeFunc, ...props}: AutocompleteFromBacken
     const [inputValue, setInputValue] = useState('')
 
     const [isFetching, toggleIsFetching] = useState(false)
+
+    const ref = useRef()
 
     const loadData = useCallback((v?: string) => {
         toggleIsFetching(true)
@@ -50,6 +52,7 @@ const AutocompleteFromBackend = ({excludeFunc, ...props}: AutocompleteFromBacken
     return (
         <Autocomplete
             id="autocomplate-backend"
+            ref={ref}
             sx={sx}
             inputValue={inputValue}
             open={open}
@@ -59,9 +62,8 @@ const AutocompleteFromBackend = ({excludeFunc, ...props}: AutocompleteFromBacken
             onClose={() => {
                 setOpen(false)
             }}
-            clearOnEscape={true}
             onChange={(e, v) => {
-                handleChangeInputValue('')
+                setInputValue('')
                 onChange(e, v)
             }}
             getOptionLabel={(option) => option.name}
@@ -88,6 +90,7 @@ const AutocompleteFromBackend = ({excludeFunc, ...props}: AutocompleteFromBacken
                 />
             )}
             autoHighlight
+            disableClearable
         />
     )
 }
