@@ -8,10 +8,12 @@ import {arrayToKeyValue} from "@/utilities/api"
 import {IDepartment} from "@/types/department"
 import {roleToRoleName, UserRolesEnum} from "@/constants"
 import UserEditModal from "@/components/modals/users/UserEditModal"
-
-import {Box} from "@mui/material";
-import ItemAddModal from "@/components/modals/items/ItemAddModal";
-import KitsAddModal from "@/components/modals/kits/KitsAddModal";
+import {Box} from "@mui/material"
+import ItemAddModal from "@/components/modals/items/ItemAddModal"
+import KitsAddModal from "@/components/modals/kits/KitsAddModal"
+import itemsAPI from "@/requests/items"
+import useAPILoad from "@/hooks/useAPILoad"
+import kitsAPI from "@/requests/kit";
 
 const columns = [
     {field: 'id', headerName: 'ID', width: 30},
@@ -20,12 +22,11 @@ const columns = [
 ]
 
 export default function Kits() {
-    const [kits, setKits] = useState([])
-    const [isFetching, toggleIsFetching] = useState(false)
+    const [dataKitsApi, errorKitsApi, isFetchingKitsApi, loadKitsApi] = useAPILoad(kitsAPI.list())
+    const isFetching = isFetchingKitsApi
 
-    const loadKits = useCallback(() => {
-        toggleIsFetching(true)
-
+    const loadData = useCallback(() => {
+        return loadKitsApi()
     }, [])
 
     useEffect(() => {
@@ -41,11 +42,11 @@ export default function Kits() {
                 <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <h1>Наборы</h1>
                     <Box>
-                        <KitsAddModal callback={loadKits}/>
+                        <KitsAddModal callback={loadData}/>
                     </Box>
                 </Box>
                 <div style={{height: 300, width: '100%'}}>
-                    <DataGrid rows={kits} columns={columns} loading={isFetching}/>
+                    <DataGrid rows={dataKitsApi.kits} columns={columns} loading={isFetching}/>
                 </div>
             </main>
         </>
