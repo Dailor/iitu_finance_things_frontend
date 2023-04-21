@@ -18,7 +18,7 @@ import {useAuth} from "@/providers/AuthProvider"
 import Image from "next/image"
 import {useRouter} from "next/router"
 
-import {adminLinks, directorLinks} from '@/links'
+import {adminLinks, commonLinks, directorLinks} from '@/links'
 import logo from '/public/logo.png'
 
 export const drawerWidth = 260
@@ -112,6 +112,7 @@ const Sidebar = () => {
             {isDirector && (
                 <SidebarLinks {...directorLinks}/>
             )}
+            <SidebarLinks {...commonLinks}/>
             <LogoutButton/>
         </Drawer>
     )

@@ -6,16 +6,13 @@ type ErrorType = any
 type IsFetchingType = boolean
 type LoadDataType = (...args: any) => Promise<axios.AxiosResponse<any>>
 
+type ApiLoadType=  Promise<axios.AxiosResponse<any>>
 
-interface Props {
-    apiLoad: Promise<axios.AxiosResponse<any>>
-}
+type HookReturn<T> = [DataType | T, ErrorType, IsFetchingType, LoadDataType]
 
-type HookReturn = [DataType, ErrorType, IsFetchingType, LoadDataType]
-
-function useAPILoad({apiLoad}: Props): HookReturn {
-    const [data, setData] = useState()
-    const [error, setError] = useState()
+function useAPILoad<T>(apiLoad: ApiLoadType): HookReturn<T> {
+    const [data, setData] = useState({})
+    const [error, setError] = useState(null)
     const [isFetching, toggleIsFetching] = useState<boolean>(false)
 
     const loadData = useCallback(() => {
@@ -30,6 +27,7 @@ function useAPILoad({apiLoad}: Props): HookReturn {
             })
             .finally(() => {
                 toggleIsFetching(false)
+
             })
     }, [])
 
