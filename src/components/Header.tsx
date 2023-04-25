@@ -1,19 +1,36 @@
 import React from 'react'
-import {AppBar, Toolbar, Typography} from "@mui/material"
+import {AppBar, IconButton, Toolbar, Typography} from "@mui/material"
 import {drawerWidth} from "@/components/Sidebar"
 import {useRouter} from "next/router"
+import MenuIcon from '@mui/icons-material/Menu'
 
+interface Props {
+    isSidebarOpen: boolean
+    sidebarToggle: () => void
+}
 
-const Header = () => {
+const Header = ({isSidebarOpen, sidebarToggle}: Props) => {
     const router = useRouter()
 
     return (
         <AppBar
             position="fixed"
-            sx={{width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`}}
+            // sx={{width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`}}
         >
             <Toolbar>
+                <IconButton
+                    color="inherit"
+                    onClick={sidebarToggle}
+                    edge="start"
+                    sx={{
+                        marginRight: 5,
+                        ...(isSidebarOpen && {display: 'none'}),
+                    }}
+                >
+                    <MenuIcon/>
+                </IconButton>
                 <Typography variant="h6" noWrap component="div">
+                    IITU Finance Things
                 </Typography>
             </Toolbar>
         </AppBar>

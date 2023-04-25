@@ -1,13 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import Head from "next/head"
 import {DataGrid, GridColDef, GridRowsProp} from "@mui/x-data-grid"
-import {IUser} from "@/types/user"
-import usersAPI from "@/requests/users"
-import departmentsAPI from "@/requests/departments"
 import {arrayToKeyValue} from "@/utilities/api"
-import {IDepartment} from "@/types/department"
-import {roleToRoleName, UserRolesEnum} from "@/constants"
-import UserEditModal from "@/components/modals/users/UserEditModal"
 import {Box, Button, Typography} from "@mui/material"
 import KitsAddModal from "@/components/modals/kits/KitsAddModal"
 import useAPILoad from "@/hooks/useAPILoad"
@@ -15,16 +9,16 @@ import kitsAPI, {IKitResponse} from "@/requests/kit"
 import {IItem} from "@/types/item"
 
 export default function Kits() {
-    const [dataKitsApi, errorKitsApi, isFetchingKitsApi, loadKitsApi] = useAPILoad<IKitResponse>(kitsAPI.list())
+    const [dataKitsApi, errorKitsApi, isFetchingKitsApi, loadKitsApi] = useAPILoad<IKitResponse>(kitsAPI.list, {kits: [], items: []})
 
     const isFetching = isFetchingKitsApi
 
     const loadData = useCallback(() => {
         return loadKitsApi()
-    }, [])
+    }, [loadKitsApi])
 
     const itemsIDToValueContainer = useMemo(() => {
-        return arrayToKeyValue<>(dataKitsApi.items || [])
+        return arrayToKeyValue<>(dataKitsApi.items)
     }, [dataKitsApi.items])
 
     useEffect(() => {
@@ -36,7 +30,7 @@ export default function Kits() {
         {field: 'name', headerName: 'Название', width: 200},
         {field: 'description', headerName: 'Описание', width: 400},
         {
-            fields: 'items', headerName: 'Предметы', width: 500,
+            field: 'items', headerName: 'Предметы', width: 500,
             renderCell: ({row}) => (
                 <Box sx={{paddingY: 2}}>
                     {row.items.map(item => (
@@ -49,7 +43,7 @@ export default function Kits() {
             )
         },
         {
-            field: 'actions', headerName: 'Действия', width: 100,
+            field: 'actions', headerName: 'Действия', flex: 1,
             renderCell: ({row}) => (
                 <Box>
                     <Button variant='contained' color='info'>Изменить</Button>
@@ -72,7 +66,8 @@ export default function Kits() {
                 </Box>
                 <Box sx={{height: 300, width: '100%'}}>
                     <DataGrid
-                        rows={dataKitsApi.kits || []} columns={columns}
+                        rows={dataKitsApi.kits}
+                        columns={columns}
                         loading={isFetching}
                         getRowHeight={() => 'auto'}
                     />

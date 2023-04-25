@@ -7,7 +7,7 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    ListSubheader,
+    ListSubheader, SwipeableDrawer,
     Toolbar
 } from "@mui/material"
 
@@ -27,6 +27,10 @@ interface SidebarLinksProps {
     heading: string
     prefix?: string
     links: Links
+}
+
+interface SidebarProps {
+    isSidebarOpen: boolean
 }
 
 const SidebarLinks = ({prefix, heading, links}: SidebarLinksProps) => {
@@ -82,11 +86,11 @@ const LogoutButton = () => {
     )
 }
 
-const Sidebar = () => {
+const Sidebar = ({isSidebarOpen}: SidebarProps) => {
     const {isAdmin, isDirector} = useAuth()
 
     return (
-        <Drawer
+        <SwipeableDrawer
             sx={{
                 width: drawerWidth,
                 flexShrink: 0,
@@ -95,7 +99,8 @@ const Sidebar = () => {
                     boxSizing: 'border-box',
                 },
             }}
-            variant="permanent"
+            variant="temporary"
+            open={isSidebarOpen}
             anchor="left"
 
         >
@@ -114,7 +119,7 @@ const Sidebar = () => {
             )}
             <SidebarLinks {...commonLinks}/>
             <LogoutButton/>
-        </Drawer>
+        </SwipeableDrawer>
     )
 }
 

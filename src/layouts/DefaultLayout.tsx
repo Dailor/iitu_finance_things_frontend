@@ -5,6 +5,7 @@ import {useAuth} from "@/providers/AuthProvider"
 import {Box, CircularProgress, Toolbar} from "@mui/material"
 import Sidebar from "@/components/Sidebar"
 import Header from "@/components/Header";
+import Navigation from "@/components/Navigation";
 
 
 const DefaultLayout = ({Component, pageProps}: AppProps) => {
@@ -57,8 +58,7 @@ const DefaultLayout = ({Component, pageProps}: AppProps) => {
 
     return (
         <Box sx={{display: 'flex', alignItems: 'start', height: '100vh'}}>
-            <Header/>
-            <Sidebar/>
+            <Navigation/>
             <Box
                 component="main"
                 sx={{flexGrow: 1, px: 3,}}

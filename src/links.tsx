@@ -31,16 +31,7 @@ export const directorLinks: IRoleLinks = {
     heading: 'Директор Департамента',
     prefix: '/director',
     links: [
-        {
-            icon: <TurnedInIcon/>,
-            title: 'Наборы',
-            to: '/kits'
-        },
-        {
-            icon: <CategoryIcon/>,
-            title: 'Предметы',
-            to: '/items'
-        }
+
     ]
 }
 
@@ -52,6 +43,16 @@ export const commonLinks: IRoleLinks = {
             icon: <NoteIcon/>,
             title: 'Запросы',
             to: '/requests'
+        },
+        {
+            icon: <TurnedInIcon/>,
+            title: 'Наборы',
+            to: '/kits'
+        },
+        {
+            icon: <CategoryIcon/>,
+            title: 'Предметы',
+            to: '/items'
         }
     ]
 }
