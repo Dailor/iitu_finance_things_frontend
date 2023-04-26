@@ -1,5 +1,6 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {
+    Box,
     Divider,
     Drawer,
     List,
@@ -31,6 +32,7 @@ interface SidebarLinksProps {
 
 interface SidebarProps {
     isSidebarOpen: boolean
+    toggleIsSidebarOpen: (isOpen: boolean) => void
 }
 
 const SidebarLinks = ({prefix, heading, links}: SidebarLinksProps) => {
@@ -41,7 +43,7 @@ const SidebarLinks = ({prefix, heading, links}: SidebarLinksProps) => {
     }
 
     const onClick = (link) => {
-        router.push(link)
+        void router.push(link)
     }
 
     return (
@@ -52,8 +54,7 @@ const SidebarLinks = ({prefix, heading, links}: SidebarLinksProps) => {
                     <ListSubheader component="div">
                         {heading}
                     </ListSubheader>
-                }
-            >
+                }>
                 {links.map((link, index) => {
                     const processedLink = processPath(link.to)
 
@@ -86,31 +87,31 @@ const LogoutButton = () => {
     )
 }
 
-const Sidebar = ({isSidebarOpen}: SidebarProps) => {
+const Sidebar = ({isSidebarOpen, toggleIsSidebarOpen}: SidebarProps) => {
     const {isAdmin, isDirector} = useAuth()
+    const router = useRouter()
 
-    return (
-        <SwipeableDrawer
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                '& .MuiDrawer-paper': {
-                    width: drawerWidth,
-                    boxSizing: 'border-box',
-                },
-            }}
-            variant="temporary"
-            open={isSidebarOpen}
-            anchor="left"
+    useEffect(() => {
+        toggleIsSidebarOpen(false)
+    }, [router.pathname, toggleIsSidebarOpen])
 
-        >
-            <Toolbar sx={(theme) => (
-                {
-                    'backgroundColor': theme.palette.primary.main
+    const toggleDrawer =
+        (open: boolean) =>
+            (event: React.KeyboardEvent | React.MouseEvent) => {
+                if (
+                    event &&
+                    event.type === 'keydown' &&
+                    ((event as React.KeyboardEvent).key === 'Tab' ||
+                        (event as React.KeyboardEvent).key === 'Shift')
+                ) {
+                    return
                 }
-            )}>
-                <Image src={logo} alt="IITU Logo" width={211} height={32}/>
-            </Toolbar>
+
+                toggleIsSidebarOpen(open)
+            }
+
+    const list = () => {
+        return <>
             {isAdmin && (
                 <SidebarLinks {...adminLinks}/>
             )}
@@ -119,6 +120,23 @@ const Sidebar = ({isSidebarOpen}: SidebarProps) => {
             )}
             <SidebarLinks {...commonLinks}/>
             <LogoutButton/>
+        </>
+    }
+
+    return (
+        <SwipeableDrawer
+            sx={{width: drawerWidth}}
+            open={isSidebarOpen}
+            onOpen={toggleDrawer(true)}
+            onClose={toggleDrawer(false)}
+            variant="temporary"
+            anchor="left">
+            <Box>
+                <Toolbar sx={{'backgroundColor': 'primary.main'}}>
+                    <Image src={logo} alt="IITU Logo" width={211} height={32}/>
+                </Toolbar>
+                {list()}
+            </Box>
         </SwipeableDrawer>
     )
 }

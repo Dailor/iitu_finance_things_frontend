@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Box, Button, Modal, SxProps, Typography} from "@mui/material"
 
 const borderColor = '#E3E5E7FF'
@@ -68,7 +68,7 @@ const ModalBody = ({children}: ModalBodyProps) => {
 }
 
 interface ModalBottomProps {
-    handleClose: () => {}
+    handleClose: () => void
     children: React.ReactNode
 }
 
@@ -81,15 +81,16 @@ const ModalBottom = ({handleClose, children}: ModalBottomProps) => {
     )
 }
 
-interface Props {
+export interface StyledModalProps {
     heading: string,
     open: boolean
+    onClose: () => void
     children: React.ReactNode,
     bottomChildren?: React.ReactNode,
     sx: SxProps
 }
 
-const StyledModal = (props: Props) => {
+const StyledModal = (props: StyledModalProps) => {
     const {open, onClose, bottomChildren} = props
 
     return (
@@ -106,5 +107,7 @@ const StyledModal = (props: Props) => {
         </Modal>
     )
 }
+
+
 
 export default StyledModal

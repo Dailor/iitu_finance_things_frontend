@@ -7,6 +7,7 @@ import KitsAddModal from "@/components/modals/kits/KitsAddModal"
 import useAPILoad from "@/hooks/useAPILoad"
 import kitsAPI, {IKitResponse} from "@/requests/kit"
 import {IItem} from "@/types/item"
+import KitsEditModal from "@/components/modals/kits/KitsEditModal";
 
 export default function Kits() {
     const [dataKitsApi, errorKitsApi, isFetchingKitsApi, loadKitsApi] = useAPILoad<IKitResponse>(kitsAPI.list, {kits: [], items: []})
@@ -46,7 +47,8 @@ export default function Kits() {
             field: 'actions', headerName: 'Действия', flex: 1,
             renderCell: ({row}) => (
                 <Box>
-                    <Button variant='contained' color='info'>Изменить</Button>
+                    {/*<Button variant='contained' color='info'>Изменить</Button>*/}
+                    <KitsEditModal/>
                 </Box>
             )
         }

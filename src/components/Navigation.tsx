@@ -13,7 +13,7 @@ function Navigation() {
     return (
         <>
             <Header isSidebarOpen={isSidebarOpen} sidebarToggle={sidebarToggle}/>
-            <Sidebar isSidebarOpen={isSidebarOpen}/>
+            <Sidebar isSidebarOpen={isSidebarOpen} toggleIsSidebarOpen={toggleIsSidebarOpen}/>
         </>
     )
 }
