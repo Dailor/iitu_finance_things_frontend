@@ -5,12 +5,12 @@ interface SmartModalProps extends Exclude<StyledModalProps, 'open' | 'onClose'> 
     openTriggerRender: React.ReactNode
 }
 
-export interface ISmartModalRef extends HTMLElement{
+export interface SmartModalRefType {
     handleOpen: () => void
     handleClose: () => void
 }
 
-const SmartModal = React.forwardRef<Ref<ISmartModalRef>, SmartModalProps>(
+const SmartModal = React.forwardRef<SmartModalRefType, Omit<SmartModalProps, 'onClose' | 'open'>>(
     function SmartModal(props, ref) {
         const [open, setOpen] = useState<boolean>(false)
 

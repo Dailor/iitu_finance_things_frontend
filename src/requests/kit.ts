@@ -1,5 +1,5 @@
 import {axiosProtected} from "@/axioses/protected"
-import {KitsEndpointsAPI} from "@/apiEndpoints"
+import {KitsEndpointsAPI, UsersEndpointsAPI} from "@/apiEndpoints"
 import {IKit} from "@/types/kit"
 import {IItem} from "@/types/item"
 
@@ -8,14 +8,14 @@ export interface IKitResponse {
     items: IItem[]
 }
 
-interface IKitAddRequest extends Omit<IKit, 'id'>{}
-
-interface IKitEditRequest extends IKit {}
+interface IKitRequest extends Omit<IKit, 'id'> {
+}
 
 
 const kitsAPI = {
     list: () => axiosProtected.get<IKitResponse>(KitsEndpointsAPI.list),
-    add: (data: IKitAddRequest) => axiosProtected.put(KitsEndpointsAPI.list, data)
+    add: (data: IKitRequest) => axiosProtected.put(KitsEndpointsAPI.list, data),
+    edit: (id: Pick<IKit, 'id'>, data) => axiosProtected.post(UsersEndpointsAPI.edit(id), data)
 }
 
 export default kitsAPI

@@ -1,9 +1,9 @@
 import React from 'react'
-import KitsModal from "@/components/modals/kits/KitsModal"
+import KitModal from "@/components/modals/kits/KitModal"
 
 
 const KitsEditModal = () => {
-    return <KitsModal></KitsModal>
+    return <KitModal></KitModal>
 }
 
 export default KitsEditModal

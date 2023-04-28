@@ -1,15 +1,16 @@
 import React, {Ref, useCallback, useMemo, useRef, useState} from 'react'
-import AutocompleteFromBackend, {AutocompleteFromBackendProps} from "@/components/AutocompleteFromBackend";
-import itemsAPI from "@/requests/items";
-import {useFormik} from "formik";
-import kitsAPI from "@/requests/kit";
-import rePatterns from "@/utilities/rePatterns";
-import {FetchingButton} from "@/components/FetchingButton";
-import {Button, Grid, TextField, Typography} from "@mui/material";
-import StyledModal from "@/components/modals/StyledModal";
-import EntityContainer from "@/components/EntityContainer";
-import * as yup from "yup";
-import SmartModal, {ISmartModalRef} from "@/components/modals/SmartModal";
+import AutocompleteFromBackend, {AutocompleteFromBackendProps} from "@/components/AutocompleteFromBackend"
+import itemsAPI from "@/requests/items"
+import {useFormik} from "formik"
+import kitsAPI from "@/requests/kit"
+import rePatterns from "@/utilities/rePatterns"
+import {FetchingButton} from "@/components/FetchingButton"
+import {Button, Grid, TextField, Typography} from "@mui/material"
+import EntityContainer from "@/components/EntityContainer"
+import * as yup from "yup"
+import SmartModal, {SmartModalRefType} from "@/components/modals/SmartModal"
+import {WithAPIRequestFuncType, PropsCallback} from "@/types/componentsWithCallback"
+import {WithTriggerButtonProps} from "@/utilities/modal";
 
 const validationSchema = yup.object({
     name: yup
@@ -35,8 +36,12 @@ interface IItemCounter {
     count: number
 }
 
-function KitsModal() {
-    const modalRef = useRef<ISmartModalRef>()
+interface Props extends PropsCallback, WithAPIRequestFuncType, WithTriggerButtonProps {
+
+}
+
+function KitModal({callback, apiRequestFunc, triggerButton}: Props) {
+    const modalRef = useRef<SmartModalRefType | null>(null)
 
     const [isFetching, toggleIsFetching] = useState<boolean>(false)
 
@@ -84,12 +89,12 @@ function KitsModal() {
 
             formik.values.items = itemsContainer
 
-            kitsAPI.add(values)
+            apiRequestFunc(values)
                 .then((r) => {
                     if (callback)
                         callback()
 
-                    handleClose()
+                    modalRef.current?.handleClose()
                 })
                 .catch(e => {
                     if (e.response.status == 422) {
@@ -120,11 +125,13 @@ function KitsModal() {
         }
     }
 
-    const triggerButton = useMemo(() => (
-        <Button variant='contained' color='info' onClick={() => {
-            modalRef.current?.handleOpen()
-        }}>Изменить</Button>
-    ), [modalRef.current])
+
+    const triggerButtonModified = useMemo(() => {
+        if (triggerButton)
+            return triggerButton(() => {
+                modalRef.current?.handleOpen()
+            })
+    }, [triggerButton])
 
     const successButton = useMemo(() => (
         <FetchingButton variant='contained' color='primary' isFetching={isFetching}
@@ -138,7 +145,7 @@ function KitsModal() {
             <SmartModal
                 sx={{width: 1000}}
                 heading='Добавить'
-                openTriggerRender={triggerButton}
+                openTriggerRender={triggerButtonModified}
                 bottomChildren={successButton}
                 ref={modalRef}>
                 <form onSubmit={formik.handleSubmit}>
@@ -198,4 +205,4 @@ function KitsModal() {
     )
 }
 
-export default KitsModal
+export default KitModal
